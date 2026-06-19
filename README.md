@@ -2,6 +2,59 @@
 Kinetic model simulation
 # %matplotlib inline
 import numpy as np
+import numpy as np
+from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
+
+# 1. Definisikan parameter sesuai tabel di soal
+V1_max = 5.0
+Km1 = 2.0
+Ki = 3.0
+X = 10.0
+k2 = 1.0
+k3 = 0.8
+k4 = 0.3
+
+# 2. Fungsi ODEs (Sistem Persamaan Diferensial)
+def metabolic_system(t, y):
+    A, B, P = y
+    
+    # Rumus kecepatan reaksi (Fluxes)
+    v1 = (V1_max * X) / ((Km1 + X) * (1 + (P / Ki)))
+    v2 = k2 * A
+    v3 = k3 * B
+    v4 = k4 * A
+    
+    # Persamaan diferensial dari Q2B
+    dAdt = v1 - v2 - v4
+    dBdt = v2 - v3
+    dPdt = v3
+    
+    return [dAdt, dBdt, dPdt]
+
+# 3. Kondisi awal (misal pada waktu t=0, semua internal metabolit bernilai 0)
+y0 = [0.0, 0.0, 0.0]
+
+# Rentang waktu simulasi (misal dari jam 0 hingga 50)
+t_span = (0, 50)
+t_eval = np.linspace(0, 50, 500)
+
+# 4. Menjalankan simulasi
+sol = solve_ivp(metabolic_system, t_span, y0, t_eval=t_eval)
+
+# 5. Membuat Grafik (Simulation Figure)
+plt.figure(figsize=(10, 6))
+plt.plot(sol.t, sol.y[0], label='Metabolit A', color='blue', linewidth=2)
+plt.plot(sol.t, sol.y[1], label='Metabolit B', color='orange', linewidth=2)
+plt.plot(sol.t, sol.y[2], label='Product P', color='green', linewidth=2)
+
+plt.title('Simulasi Dinamika Sistem Metabolik dengan Allosteric Inhibition', fontsize=14)
+plt.xlabel('Waktu (Waktu)', fontsize=12)
+plt.ylabel('Konsentrasi Metabolit', fontsize=12)
+plt.legend(fontsize=11)
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
